@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Elevator;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -130,6 +131,34 @@ class SiteController extends Controller
     public function actionTest()
     {
 
+        $people = [
+            '1' => [
+                'name' => "First",
+                'current_level' => 1,
+                'to_level' => 4,
+                'button' => Elevator::MOVE_UP
+            ],
+            '2' => [
+                'name' => "Second",
+                'current_level' => 3,
+                'to_level' => 2,
+                'button' => Elevator::MOVE_DOWN
+            ],
+            '3' => [
+                'name' => "Third",
+                'current_level' => 4,
+                'to_level' => 1,
+                'button' => Elevator::MOVE_DOWN
+            ]
+        ];
+
+
+        $elevator = new Elevator($people);
+
+        $elevator->start();
+
+
+        return $this->render('index');
     }
 
 }
