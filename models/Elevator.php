@@ -35,28 +35,33 @@ class Elevator extends \yii\base\Object
 
     /**
      * Люди которые хотят поехать на лифте.
-     * @var
+     * @var People
      */
     protected $people;
 
     /**
      * Люди которые находятся в нутри лифта
-     * @var array
+     * @var People
      */
-    protected $people_in_elevator = [];
+    protected $people_in_elevator;
 
+    /**
+     * Elevator constructor.
+     * @param People $people
+     */
     public function __construct($people)
     {
         $this->setPeople($people);
+        $this->people_in_elevator = new People();
         parent::__construct();
     }
 
     /**
-     * @param $people
+     * @param People $people
      */
     protected function setPeople($people)
     {
-        $this->people = $people;
+        $this->people = clone $people;
     }
 
 
@@ -67,7 +72,7 @@ class Elevator extends \yii\base\Object
      */
     public function start()
     {
-        if(!$this->people){
+        if(!$this->people->getPeople()){
             \Yii::info("Пасажиров нету. Лифт пустой.", 'elevator');
             return true;
         }
@@ -106,10 +111,10 @@ class Elevator extends \yii\base\Object
      */
    protected function loadPersonInElevator()
    {
-       foreach ($this->people as $key => $person){
-           if($person['current_level'] == $this->current_level && $person["button"] == $this->move){
-               $this->people_in_elevator[] = $person;
-               unset($this->people[$key]);
+       foreach ($this->people->getPeople() as $key => $person){
+           if($person->current_level == $this->current_level && $person->getButton() == $this->move){
+               $this->people_in_elevator->addHuman($person);
+               $this->people->removeHuman($key);
                \Yii::info("Человек зашел в лифт!", 'elevator');
            }
        }
@@ -117,21 +122,23 @@ class Elevator extends \yii\base\Object
 
     /**
      * Люди выходят из лифта
+     * @return bool
      */
     protected function unloadPersonFromElevator()
     {
-        if (!$this->people_in_elevator){
+        if (!$this->people_in_elevator->getPeople()){
             \Yii::error('Нету людей в лифте!', 'elevator');
             return false;
         }
 
-        foreach ($this->people_in_elevator as $key => $person){
-            if($person['to_level'] == $this->current_level){
-                unset($this->people_in_elevator[$key]);
+        foreach ($this->people_in_elevator->getPeople() as $key => $person){
+            if($person->to_level == $this->current_level){
+                $this->people_in_elevator->removeHuman($key);
                 $this->people_count++;
                 \Yii::info("Человек вышел из лифта!", 'elevator');
             }
-        }
+       }
+       return true;
     }
 
 

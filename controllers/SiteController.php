@@ -3,8 +3,11 @@
 namespace app\controllers;
 
 use app\models\Elevator;
+use app\models\Human;
+use app\models\People;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
@@ -130,28 +133,14 @@ class SiteController extends Controller
      */
     public function actionTest()
     {
+        $human = new Human("First", 1, 4);
+        $human2 = new Human("Second", 3, 2);
+        $human3 = new Human("Third", 4, 1);
 
-        $people = [
-            '1' => [
-                'name' => "First",
-                'current_level' => 1,
-                'to_level' => 4,
-                'button' => Elevator::MOVE_UP
-            ],
-            '2' => [
-                'name' => "Second",
-                'current_level' => 3,
-                'to_level' => 2,
-                'button' => Elevator::MOVE_DOWN
-            ],
-            '3' => [
-                'name' => "Third",
-                'current_level' => 4,
-                'to_level' => 1,
-                'button' => Elevator::MOVE_DOWN
-            ]
-        ];
-
+        $people = new People();
+        $people->addHuman($human);
+        $people->addHuman($human2);
+        $people->addHuman($human3);
 
         $elevator = new Elevator($people);
 
